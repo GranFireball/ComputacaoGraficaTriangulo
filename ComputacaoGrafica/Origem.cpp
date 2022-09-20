@@ -6,9 +6,10 @@
 #include "glm/gtc/type_ptr.hpp"
 #include<vector>
 #include "Mesh.h"
+#include "Shader.h"
 
-GLuint programa;
 std::vector<Mesh*> listMesh;
+std::vector<Shader*> listShader;
 
 //Vertex Array
 static const char* vShader = "                        \n\
@@ -16,11 +17,12 @@ static const char* vShader = "                        \n\
                                                       \n\
 layout(location = 0) in vec3 pos;                     \n\
 uniform mat4 model;                                  \n\
+uniform mat4 projection;                              \n\
 out vec4 vColor;                                      \n\
                                                       \n\
                                                       \n\
 void main(){										  \n\
-	gl_Position = model * vec4(pos, 1.0f); \n\
+	gl_Position = projection * model * vec4(pos, 1.0f); \n\
 	vColor = vec4(clamp(pos, 0.0f, 1.0f), 1.0f);                   \n\
 }                                                     \n\
                                                       ";
@@ -45,9 +47,17 @@ void CriaTriangulos() {
 	GLfloat vertices[] = {
 		//x , y
 		0.0f, 1.0f, 0.0f, //vertice 0 (verde)
-		-1.0f, -1.0f, 0.0f, //vertice 1 (preto)
-		1.0f, -1.0f, 0.0f, //vertice 2 (vermelho)
-		0.0f, -1.0f, 1.0f //vertice 3 (azul)
+		-1.0f, -0.7f, 0.0f, //vertice 1 (preto)
+		0.0f, -0.7f, 0.0f, //vertice 2 (vermelho)
+		0.0f, -0.7f, 1.0f //vertice 3 (azul)
+	};
+
+	GLfloat vertices2[] = {
+		//x , y
+		0.0f, 1.0f, 0.0f, //vertice 0 (verde)
+		0.0f, -0.7f, 0.0f, //vertice 1 (preto)
+		1.0f, -0.7f, 0.0f, //vertice 2 (vermelho)
+		0.0f, -0.7f, -1.0f //vertice 3 (azul)
 	};
 
 	GLuint indice[] = {
@@ -63,34 +73,17 @@ void CriaTriangulos() {
 	listMesh.push_back(obj1);
 
 	Mesh* obj2 = new Mesh();
-	obj2->CrateMesh(vertices, sizeof(vertices), indice, sizeof(indice));
+	obj2->CrateMesh(vertices2, sizeof(vertices2), indice, sizeof(indice));
 	listMesh.push_back(obj2);
 
 }
 
-void CompilaShader() {
-	programa = glCreateProgram(); //Cria um programa
-	GLuint _vShader = glCreateShader(GL_VERTEX_SHADER); //Cria um shader
-	GLuint _fShader = glCreateShader(GL_FRAGMENT_SHADER); //Cria um shader
-
-	//Gambiarra para converter Char em GLChar
-	const GLchar* vCode[1];
-	const GLchar* fCode[1];
-	vCode[0] = vShader; //Código do vShader
-	fCode[0] = fShader; //Código do fShader
-
-	glShaderSource(_vShader, 1, vCode, NULL); //Associa o shader ao código
-	glCompileShader(_vShader); //Compila o shader
-
-	glShaderSource(_fShader, 1, fCode, NULL); //Associa o shader ao código
-	glCompileShader(_fShader); //Compila o shader
-
-	glAttachShader(programa, _vShader); //Adiciona o shader ao programa
-	glAttachShader(programa, _fShader); //Adiciona o shader ao programa
-
-	glLinkProgram(programa); //Adiciona o programa
-
+void CriaShader() {
+	Shader* shader = new Shader();
+	shader->CreateFromString(vShader, fShader);
+	listShader.push_back(shader);
 }
+
 
 int main() {
 	if (!glfwInit()) {
@@ -98,7 +91,7 @@ int main() {
 		return 1;
 	};
 
-	GLFWwindow * mainWindow = glfwCreateWindow(800, 600, "Ola Mundo!", NULL, NULL);
+	GLFWwindow* mainWindow = glfwCreateWindow(800, 600, "Ola Mundo!", NULL, NULL);
 	if (!mainWindow) {
 		printf("GLFW: Não foi possível criar janela");
 		glfwTerminate;
@@ -115,14 +108,15 @@ int main() {
 		glfwDestroyWindow(mainWindow);
 		glfwTerminate();
 		return 1;
-;	}
+		;
+	}
 
 	glEnable(GL_DEPTH_TEST);
 
 	glViewport(0, 0, bufferWidth, bufferHeight);
 
 	CriaTriangulos();
-	CompilaShader();
+	CriaShader();
 
 	float triangleOffset = 0.0f, maxOffset = 0.7f, minOffset = -0.7f, incOffset = 0.05f;
 	bool direction = true;
@@ -134,7 +128,7 @@ int main() {
 	bool scale = true;
 
 	while (!glfwWindowShouldClose(mainWindow)) {
-		
+
 		//Habilitar os eventos do usuario
 		glfwPollEvents();
 
@@ -142,42 +136,42 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//Desenha o triangulo
-		glUseProgram(programa);
+		Shader* shader = listShader[0];
+		shader->UseProgram();
 
-				//Mover o triangulo
-				triangleOffset += direction ? incOffset : incOffset * -1;
-				if (triangleOffset >= maxOffset || triangleOffset <= minOffset) direction = !direction;				
+		//Mover o triangulo
+		//triangleOffset += direction ? incOffset : incOffset * -1;
+		//if (triangleOffset >= maxOffset || triangleOffset <= minOffset) direction = !direction;				
 
-				//Rotacao do triangulo
-				rotationOffset += rotation ? incRotation : incRotation * -1;
-				if (rotationOffset >= maxRotation || rotationOffset <= minRotation)
-					rotation = !rotation;				
+		//Rotacao do triangulo
+		rotationOffset += rotation ? incRotation : incRotation * 0.05;
+		if (rotationOffset >= maxRotation || rotationOffset <= minRotation) rotation = !rotation;
 
-				//Scale do triangulo
-				scaleOffset += scale ? incScale: incScale * -1;
-				if (scaleOffset >= maxScale || scaleOffset <= minScale)
-					scale = !scale;
+		//Scale do triangulo
+		//scaleOffset += scale ? incScale: incScale * -1;
+		//if (scaleOffset >= maxScale || scaleOffset <= minScale) scale = !scale;
 
-				//Triangulo 1
-				listMesh[0]->RenderMesh();
-				glm::mat4 model(1.0f);
-				model = glm::translate(model, glm::vec3(triangleOffset, -triangleOffset, 0.0f));
-				model = glm::rotate(model, glm::radians(rotationOffset), glm::vec3(0.0f, 1.0f, 1.0f));
-				model = glm::scale(model, glm::vec3(0.4f, 0.4f, 0.4f));
+		//Triangulo 1
+		listMesh[0]->RenderMesh();
+		glm::mat4 model(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, 0.5f, -2.0f));
+		model = glm::rotate(model, glm::radians(rotationOffset), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.4f, 0.4f, 0.4f));
 
-				GLuint uniModel = glGetUniformLocation(programa, "model");
-				glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(shader->GetUniformModel(), 1, GL_FALSE, glm::value_ptr(model));
 
-				//Triangulo 2
-				listMesh[1]->RenderMesh();
-				model = glm::mat4(1.0f);
-				model = glm::translate(model, glm::vec3(-triangleOffset, triangleOffset, 0.0f));
-				model = glm::rotate(model, glm::radians(rotationOffset), glm::vec3(0.0f, 1.0f, 1.0f));
-				model = glm::scale(model, glm::vec3(0.4f, 0.4f, 0.4f));
+		//Triangulo 2
+		listMesh[1]->RenderMesh();
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, -0.5f, -5.0f));
+		model = glm::rotate(model, glm::radians(rotationOffset), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.4f, 0.4f, 0.4f));
 
-				uniModel = glGetUniformLocation(programa, "model");
-				glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
-				
+		glUniformMatrix4fv(shader->GetUniformModel(), 1, GL_FALSE, glm::value_ptr(model));
+
+		//Projeção de perspectiva 3D
+		glm::mat4 projection = glm::perspective(1.0f, (GLfloat)bufferWidth/(GLfloat)bufferHeight, 0.1f, 100.0f);
+		glUniformMatrix4fv(shader->GetUniformProjection(), 1, GL_FALSE, glm::value_ptr(projection));
 
 		glUseProgram(0);
 
