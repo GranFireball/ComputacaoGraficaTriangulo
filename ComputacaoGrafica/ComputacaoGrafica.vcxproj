@@ -128,16 +128,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="FragmentShader.glsl" />
     <None Include="packages.config" />
+    <None Include="VertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Origem.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
