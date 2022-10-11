@@ -56,6 +56,7 @@ int Window::Initialize() {
 
 void Window::CreateCallBacks() {
 	glfwSetKeyCallback(window, handleKeys);
+	glfwSetCursorPosCallback(window, handleMouse);
 }
 
 void Window::handleKeys(GLFWwindow* window, int key, int code, int action, int mode) {
@@ -75,5 +76,33 @@ void Window::handleKeys(GLFWwindow* window, int key, int code, int action, int m
 			printf("SOLTOU: %d\n", key);
 		}
 	}
+}
+
+void Window::handleMouse(GLFWwindow* window, double xPos, double yPos) {
+	Window* theWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
+
+	if (theWindow->mouseFirstMove) {
+		theWindow->lastX = xPos;
+		theWindow->lastY = yPos;
+		theWindow->mouseFirstMove = false;
+	}
+	
+	theWindow->xChange = xPos - theWindow->lastX;
+	theWindow->yChange = theWindow->lastY - yPos;
+
+	theWindow->lastX = xPos;
+	theWindow->lastY = yPos;
+}
+
+GLfloat Window::GetXChange() {
+	GLfloat change = xChange;
+	xChange = 0.0f;
+	return change;
+}
+
+GLfloat Window::GetYChange() {
+	GLfloat change = yChange;
+	yChange = 0.0f;
+	return change;
 }
 

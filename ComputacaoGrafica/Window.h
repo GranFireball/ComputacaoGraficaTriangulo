@@ -15,6 +15,9 @@ public:
 	GLfloat GetBufferWidth() { return (GLfloat)bufferWidth; }
 	GLfloat GetBufferHeight() { return (GLfloat)bufferHeight; }
 	void SwapBuffers() { return glfwSwapBuffers(window); }
+	bool* GetKeys() { return keys; }
+	GLfloat GetXChange();
+	GLfloat GetYChange();
 
 private:
 	GLFWwindow* window;
@@ -29,5 +32,8 @@ private:
 
 	static void handleKeys(GLFWwindow *window, int key, int code, int action, int mode);
 
+	//Mouse
+	bool mouseFirstMove;
+	GLfloat lastX, lastY, xChange, yChange;
+	static void handleMouse(GLFWwindow *window, double xPos, double yPos);
 };
-

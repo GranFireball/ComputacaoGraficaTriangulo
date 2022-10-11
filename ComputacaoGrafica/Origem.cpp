@@ -4,14 +4,16 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#include<vector>
+#include <vector>
 #include "Mesh.h"
 #include "Shader.h"
 #include "Window.h"
+#include "Camera.h"
 
 std::vector<Mesh*> listMesh;
 std::vector<Shader*> listShader;
-Window *window;
+Window* window;
+Camera camera;
 
 //Vertex Array
 static const char* VertexLocation = "VertexShader.glsl";
@@ -66,6 +68,9 @@ int main() {
 	CriaTriangulos();
 	CriaShader();
 
+	//Camera
+	camera = Camera(glm::vec3(0.0f,0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 0.5f, 0.5f);
+
 	float triangleOffset = 0.0f, maxOffset = 0.7f, minOffset = -0.7f, incOffset = 0.05f;
 	bool direction = true;
 
@@ -82,6 +87,9 @@ int main() {
 
 		glClearColor(1.0f, 0.75f, 0.79f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		camera.KeyControl(window->GetKeys());
+		camera.MouseControl(window->GetXChange(), window->GetYChange());
 
 		//Desenha o triangulo
 		Shader* shader = listShader[0];
@@ -120,6 +128,8 @@ int main() {
 		//Projeção de perspectiva 3D
 		glm::mat4 projection = glm::perspective(1.0f, window->GetBufferWidth() / window->GetBufferHeight(), 0.1f, 100.0f);
 		glUniformMatrix4fv(shader->GetUniformProjection(), 1, GL_FALSE, glm::value_ptr(projection));
+		
+		glUniformMatrix4fv(shader->GetUniformView(), 1, GL_FALSE, glm::value_ptr(camera.calculateView()));
 
 		glUseProgram(0);
 

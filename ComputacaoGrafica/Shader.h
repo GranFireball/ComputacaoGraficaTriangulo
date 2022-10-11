@@ -13,10 +13,11 @@ public:
 	void UseProgram();
 	GLuint GetUniformModel() { return uniformModel; };
 	GLuint GetUniformProjection() { return uniformProjection; };
+	GLuint GetUniformView() { return uniformView; }
 
 private:
 	GLuint shaderId;
-	GLuint uniformModel, uniformProjection;
+	GLuint uniformModel, uniformProjection, uniformView;
 	void Compile(const char* vShader, const char* fShader);
 	std::string ReadFile(const char* fileLocation);
 };

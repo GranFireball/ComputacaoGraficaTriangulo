@@ -28,7 +28,7 @@ void Shader::Compile(const char* vertexCode, const char* fragmentCode) {
 
 	uniformModel = glGetUniformLocation(shaderId, "model");
 	uniformProjection = glGetUniformLocation(shaderId, "projection");
-
+	uniformView = glGetUniformLocation(shaderId, "view");
 }
 
 void Shader::UseProgram() {
