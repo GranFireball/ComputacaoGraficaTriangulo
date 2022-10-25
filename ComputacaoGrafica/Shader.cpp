@@ -1,5 +1,6 @@
 #include "Shader.h"
 
+
 void Shader::CreateFromString(const char* vertexCode, const char* fragmentCode) {
 	Compile(vertexCode, fragmentCode);
 }
@@ -15,15 +16,15 @@ void Shader::Compile(const char* vertexCode, const char* fragmentCode) {
 	vCode[0] = vertexCode; //Código do vShader
 	fCode[0] = fragmentCode; //Código do fShader
 
-	glShaderSource(_vShader, 1, vCode, NULL); //Associa o shader ao código
+	glShaderSource(_vShader, 1, vCode, NULL); //associa o shader ao código
 	glCompileShader(_vShader); //Compila o shader
-
-	glShaderSource(_fShader, 1, fCode, NULL); //Associa o shader ao código
-	glCompileShader(_fShader); //Compila o shader
-
 	glAttachShader(shaderId, _vShader); //Adiciona o shader ao programa
+
+
+	glShaderSource(_fShader, 1, fCode, NULL); //associa o shader ao código
+	glCompileShader(_fShader); //Compila o shader
 	glAttachShader(shaderId, _fShader); //Adiciona o shader ao programa
-	
+
 	glLinkProgram(shaderId); //Adiciona o programa
 
 	uniformModel = glGetUniformLocation(shaderId, "model");
@@ -39,7 +40,6 @@ Shader::Shader() {
 	shaderId = 0;
 	uniformModel = 0;
 	uniformProjection = 0;
-
 }
 
 Shader::~Shader() {
@@ -50,9 +50,9 @@ Shader::~Shader() {
 
 void Shader::CreateFromFile(const char* vertexLocation, const char* fragmentLocation) {
 	std::string vertexCode = ReadFile(vertexLocation);
-	std::string fragmentCode = ReadFile(fragmentLocation);
-	
-	Compile(vertexCode.c_str(), fragmentCode.c_str());
+	std::string fragmnetCode = ReadFile(fragmentLocation);
+
+	Compile(vertexCode.c_str(), fragmnetCode.c_str());
 }
 
 std::string Shader::ReadFile(const char* fileLocation) {
@@ -69,8 +69,6 @@ std::string Shader::ReadFile(const char* fileLocation) {
 		std::getline(fileStream, line);
 		content.append(line + "\n");
 	}
-
 	fileStream.close();
 	return content;
-
 }

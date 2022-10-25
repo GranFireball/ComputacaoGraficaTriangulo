@@ -16,7 +16,7 @@ Camera::Camera() {
 }
 
 Camera::~Camera() {
-	
+
 }
 
 void Camera::update() {
@@ -30,7 +30,6 @@ void Camera::update() {
 
 	up = glm::cross(right, front);
 	up = glm::normalize(up);
-
 }
 
 void Camera::KeyControl(bool* keys) {
@@ -60,7 +59,6 @@ void Camera::MouseControl(GLfloat xChange, GLfloat yChange) {
 	}
 
 	update();
-
 }
 
 glm::mat4 Camera::calculateView() {

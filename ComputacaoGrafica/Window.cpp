@@ -24,17 +24,16 @@ int Window::Initialize() {
 	if (!glfwInit()) {
 		printf("GLFW: Não pode ser iniciado");
 		return 1;
-	};
+	}
 
-	window = glfwCreateWindow(800, 600, "Ola Mundo!", NULL, NULL);
+	window = glfwCreateWindow(width, height, "Nova Janela", NULL, NULL);
 	if (!window) {
-		printf("GLFW: Não foi possível criar janela");
-		glfwTerminate;
+		printf("GLFW: Não foi possível criar a janela");
+		glfwTerminate();
 		return 1;
 	}
 
 	glfwGetFramebufferSize(window, &bufferWidth, &bufferHeight);
-
 	glfwMakeContextCurrent(window);
 
 	if (glewInit() != GLEW_OK) {
@@ -42,26 +41,22 @@ int Window::Initialize() {
 		glfwDestroyWindow(window);
 		glfwTerminate();
 		return 1;
-		;
 	}
 
 	glEnable(GL_DEPTH_TEST);
-
 	glViewport(0, 0, bufferWidth, bufferHeight);
-
 	glfwSetWindowUserPointer(window, this);
-
-	CreateCallBacks();
+	CreateCallbacks();
 }
 
-void Window::CreateCallBacks() {
+void Window::CreateCallbacks() {
 	glfwSetKeyCallback(window, handleKeys);
 	glfwSetCursorPosCallback(window, handleMouse);
 }
 
-void Window::handleKeys(GLFWwindow* window, int key, int code, int action, int mode) {
+void Window::handleKeys(GLFWwindow * window, int key, int code, int action, int mode) {
 	Window* theWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
-	
+
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
@@ -69,11 +64,11 @@ void Window::handleKeys(GLFWwindow* window, int key, int code, int action, int m
 	if (key >= 0 && key <= 1024) {
 		if (action == GLFW_PRESS) {
 			theWindow->keys[key] = true;
-			printf("APERTOU: %d\n", key);
+			printf("Apertou: %d\n", key);
 		}
-		else if (action == GLFW_RELEASE) {
+		else if(action == GLFW_RELEASE) {
 			theWindow->keys[key] = false;
-			printf("SOLTOU: %d\n", key);
+			printf("Soltou: %d\n", key);
 		}
 	}
 }
@@ -86,7 +81,7 @@ void Window::handleMouse(GLFWwindow* window, double xPos, double yPos) {
 		theWindow->lastY = yPos;
 		theWindow->mouseFirstMove = false;
 	}
-	
+
 	theWindow->xChange = xPos - theWindow->lastX;
 	theWindow->yChange = theWindow->lastY - yPos;
 
@@ -105,4 +100,5 @@ GLfloat Window::GetYChange() {
 	yChange = 0.0f;
 	return change;
 }
+
 

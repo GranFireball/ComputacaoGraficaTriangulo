@@ -3,7 +3,6 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-
 class Camera
 {
 public:
@@ -14,7 +13,6 @@ public:
 	void KeyControl(bool* keys);
 	void MouseControl(GLfloat xChange, GLfloat yChange);
 	glm::mat4 calculateView();
-	
 
 private:
 	glm::vec3 position;
@@ -25,6 +23,7 @@ private:
 	glm::vec3 front;
 	glm::vec3 up;
 	glm::vec3 right;
+
 	void update();
 };
 
